@@ -43,12 +43,12 @@ with Session(engine) as session:
 
     
     # 1. CRIAR CLIENTES
-    Marselo = Cliente(nome="Marselo", cpf="19456233827", telefone="(11) 1234-5678", email="marselofreire@gmail.com", genero="Masculino", generico="Masculino", valor_de_comissao=100)
-    Leonardo = Cliente(nome="Leonardo", cpf="36729501842", telefone="(21) 9876-5432", email="leocaparica@gmail.com", genero="Masculino", generico="Masculino", valor_de_comissao=200)
+    Marselo = Cliente(nome="Marselo", cpf="19456233827", telefone="(11) 1234-5678", email="marselofreire@gmail.com", genero="Masculino", generico="Masculino", valor_de_comissao=112)
+    Leonardo = Cliente(nome="Leonardo", cpf="36729501842", telefone="(21) 9876-5432", email="leocaparica@gmail.com", genero="Masculino", generico="Masculino", valor_de_comissao=234)
     Donatelo = Cliente(nome="Donatelo", cpf="16385494420", telefone="(31) 5555-1234", email="donatelocamera@gmail.com", genero="Masculino", generico="Masculino", valor_de_comissao=40)
     Aparecida = Cliente(nome="Aparecida", cpf="60351747112", telefone="(41) 7890-1234", email="Cidasouza@gmail.com", genero="Femenino", generico="Femenino", valor_de_comissao=50)
-    Fabrisio = Cliente(nome="Fabrisio", cpf="30155822524", telefone="(51) 2345-6789", email="fabrisiopinterest@gmail.com", genero="Masculino", generico="Masculino", valor_de_comissao=80)
-    Ruan = Cliente(nome="Ruan", cpf="43543054305", telefone="(31) 2446-6789", email="ruanenzo@gmail.com", genero="Masculino", generico="Masculino", valor_de_comissao=100)
+    Fabrisio = Cliente(nome="Fabrisio", cpf="30155822524", telefone="(51) 2345-6789", email="fabrisiopinterest@gmail.com", genero="Masculino", generico="Masculino", valor_de_comissao=252)
+    Ruan = Cliente(nome="Ruan", cpf="43543054305", telefone="(31) 2446-6789", email="ruanenzo@gmail.com", genero="Masculino", generico="Masculino", valor_de_comissao=30)
 
 
     session.add_all([Marselo, Leonardo, Donatelo, Aparecida, Fabrisio, Ruan])
@@ -171,6 +171,7 @@ with Session(engine) as session:
 Produtos = session.query(Produto, Fornecedor).join(Fornecedor, Produto.fornecedor_id == Fornecedor.id)
 vendas = session.query(Venda, Cliente, FormaDePagamento, Funcionario).join(Cliente).join(FormaDePagamento).join(Funcionario)
 vendasProdutos = session.query(VendaProduto, Venda, Produto).join(Venda).join(Produto)
+Funcionarios = session.query(Funcionario, Departamento, Manutencao).join(Departamento).join(Manutencao)
 
 clientes = session.query(Cliente).all()
 print("\nConsulta numero 1 tabela Cliente")
@@ -182,21 +183,21 @@ for cliente in clientes:
     print(f"Email: {cliente.email}")
     print(f"Genero: {cliente.genero}")
     print(f"Generico: {cliente.generico}")
-    print(f"Valor De Comissao: {cliente.valor_de_comissao}")
+    print(f"Valor De Comissao: {cliente.valor_de_comissao}\n")
     
 Departamento = session.query(Departamento).all()
 print("\nConsulta numero 2 tabela Departamento")
 for departamento in Departamento:
     print(f"\nID: {departamento.id}")
     print(f"Nome: {departamento.nome}")
-    print(f"Genero: {departamento.genero}")
+    print(f"Genero: {departamento.genero}\n")
     
 FormaDePagamento = session.query(FormaDePagamento).all()
 print("\nConsulta numero 3 tabela Formas de Pagamento")
 for FormaDePagamento in FormaDePagamento:
     print(f"\nID: {FormaDePagamento.id}")
     print(f"Nome: {FormaDePagamento.nome}")
-    print(f"Genero: {FormaDePagamento.tipo_de_forma_de_pagamento}")
+    print(f"Genero: {FormaDePagamento.tipo_de_forma_de_pagamento}\n")
     
 Fornecedor = session.query(Fornecedor).all()
 print("\nConsulta numero 4 tabela de Fornecedores")
@@ -205,18 +206,33 @@ for Fornecedor in Fornecedor:
     print(f"CNPJ: {Fornecedor.cnpj}")
     print(f"Nome da Empresa: {Fornecedor.nome_da_empresa}")
     print(f"Qual o Produto: {Fornecedor.tipo_de_produto}")
-    print(f"Quantidade Fornecida: {Fornecedor.quantidade_de_produto}")
+    print(f"Quantidade Fornecida: {Fornecedor.quantidade_de_produto}\n")
+    
+print("Consulta número 5 tabela de Funcionarios")
+for funcionario, departamento, manutencao in Funcionarios:
+    print(f"ID: {funcionario.id}")
+    print(f"Nome: {funcionario.nome}")
+    print(f"CPF: {funcionario.cpf}")
+    print(f"Conta: {funcionario.conta}")
+    print(f"Salario: {funcionario.salario}")
+    print(f"Carga Horaria: {funcionario.carga_horaria}")
+    print(f"Endereço: {funcionario.endereco}")
+    print(f"Função: {funcionario.funcao}")
+    print(f"Comissão: {funcionario.comissao}")
+    print(f"Departamento: {departamento.nome}")
+
+
     
 Manutencao = session.query(Manutencao).all()
-print("\nConsulta numero 5 tabela de Manutenção")
+print("\nConsulta numero 6 tabela de Manutenção")
 for Manutencao in Manutencao:
     print(f"\nID: {Manutencao.id}")
     print(f"Nome: {Manutencao.nome}")
-    print(f"Setor: {Manutencao.setor}")
+    print(f"Setor: {Manutencao.setor}\n")
     
 Produto = session.query(Produto).all()
 print(".")
-print("\nConsulta numero 6 tabela de Produtos")
+print("\nConsulta numero 7 tabela de Produtos")
 for produto, fornecedor in Produtos:
     print(f"\nID: {produto.id}")
     print(f" Nome: {produto.nome}")
@@ -227,22 +243,49 @@ for produto, fornecedor in Produtos:
     print(f"Valor: {produto.valor}")
     print(f"Comissão: {produto.comissao}")
     print(f"Quantidade De Produtos: {produto.quantidade}")
-    print(f"Fornecedor: {fornecedor.nome_da_empresa}")
+    print(f"Fornecedor: {fornecedor.nome_da_empresa}\n")
     
 Venda = session.query(Venda).all()
-print("\nConsulta numero 7 tabela de Venda")
+print("\nConsulta numero 8 tabela de Venda")
 for Venda, cliente, FormaDePagamento, Funcionario in vendas:
     print(f"\nID: {Venda.id}")
     print(f"Data: {Venda.data}")
     print(f"Valor: {Venda.valor}")
     print(f"Cliente: {cliente.nome}")
     print(f"Forma De Pagamento: {FormaDePagamento.nome}")
-    print(f"Funcionario: {Funcionario.nome}")
+    print(f"Funcionario: {Funcionario.nome}\n")
     
-print("\nConsulta numero 8 tabela de VendaProduto")
+print("\nConsulta numero 9 tabela de VendaProduto")
 for venda_produto, venda, produto in vendasProdutos:
     print(f"\nID: {venda_produto.id}")
     print(f"Venda ID: {venda.id}")
     print(f"Produto ID: {produto.id}\n")
     
+    
+print("Quais são os dados dos clientes com valor de comissão acima de 100?\n")
+
+clientes_com_comissao_acima_de_100 = session.query(Cliente).filter(Cliente.valor_de_comissao > 100).all()
+for cliente in clientes_com_comissao_acima_de_100:
+    print("ID:", cliente.id)
+    print("Nome:", cliente.nome)
+    print("CPF:", cliente.cpf)
+    print("Telefone:", cliente.telefone)
+    print("Email:", cliente.email)
+    print("Valor de Comissão:", cliente.valor_de_comissao)
+    print("\n")
+    
+print("Quais são os dados dos Funcionarios com Salario acima de 3000?\n")
+
+salario_maior_que_3000 = session.query(Funcionario).filter(Funcionario.salario > 3000).all()
+for funcio in salario_maior_que_3000:
+    print("ID:", Funcionario.id)
+    print("Nome:", Funcionario.nome)
+    print("CPF:", Funcionario.cpf)
+    print("Conta:", Funcionario.conta)
+    print("Carga Horaria:", Funcionario.carga_horaria)
+    print("Endereço:", Funcionario.endereco)
+    print("Função:", Funcionario.funcao)
+    print("Valor de Comissão:", Funcionario.comissao)
+    print("\n")
+
 session.close()
