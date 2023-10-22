@@ -3,6 +3,7 @@ from services.database import engine
 from models import Cliente, Departamento, FormaDePagamento, Fornecedor, Funcionario, Manutencao, Produto, Venda, VendaProduto
 from models import Base
 from services.database import Session
+from sqlalchemy.orm import sessionmaker
 from urllib.parse import quote
 from datetime import datetime
 from sqlalchemy import update
@@ -77,12 +78,13 @@ with Session(engine) as session:
     session.commit()
 
     # 4. CRIAR FORNECEDOR
-    Odin = Fornecedor(cnpj="12345678000190", nome_da_empresa="Fornecodr Odin", tipo_de_produto="Camisa", quantidade_de_produto="30", valor=5000)
-    Zeus = Fornecedor(cnpj="98765432000121", nome_da_empresa="Fornecodr Zeus", tipo_de_produto="Bolsa", quantidade_de_produto="10", valor=18000)
-    Tyche = Fornecedor(cnpj="11222333000144", nome_da_empresa="Fornecodr Tyche", tipo_de_produto="Salto", quantidade_de_produto="47", valor=5300)
-    Loki = Fornecedor(cnpj="55666777000188", nome_da_empresa="Fornecodr Loki", tipo_de_produto="Calça", quantidade_de_produto="25", valor=9405)
-    Aphrodite = Fornecedor(cnpj="99888777000133", nome_da_empresa="Fornecodr Aphrodite", tipo_de_produto="Cueca", quantidade_de_produto="53", valor=85)
-    Hades = Fornecedor(cnpj="77555444000166", nome_da_empresa="Fornecodr Hades", tipo_de_produto="Cinto", quantidade_de_produto="23", valor=490)
+    Odin = Fornecedor(cnpj="12345678000190", nome_da_empresa="Fornecodr Odin", tipo_de_produto="Camisa", quantidade_de_produto=30, valor=5000)
+    Zeus = Fornecedor(cnpj="98765432000121", nome_da_empresa="Fornecodr Zeus", tipo_de_produto="Bolsa", quantidade_de_produto=10, valor=18000)
+    Tyche = Fornecedor(cnpj="11222333000144", nome_da_empresa="Fornecodr Tyche", tipo_de_produto="Salto", quantidade_de_produto=47, valor=5300)
+    Loki = Fornecedor(cnpj="55666777000188", nome_da_empresa="Fornecodr Loki", tipo_de_produto="Calça", quantidade_de_produto=25, valor=9405)
+    Aphrodite = Fornecedor(cnpj="99888777000133", nome_da_empresa="Fornecodr Aphrodite", tipo_de_produto="Cueca", quantidade_de_produto=53, valor=85)
+    Hades = Fornecedor(cnpj="77555444000166", nome_da_empresa="Fornecodr Hades", tipo_de_produto="Cinto", quantidade_de_produto=23, valor=490)
+
 
     session.add_all([Odin, Zeus, Tyche, Loki, Aphrodite, Hades])
     session.commit()
@@ -97,7 +99,7 @@ with Session(engine) as session:
 
     session.add_all([Joao, Claudia, GuiFalks, Carlos, Henrique, Thiaguinho])
     session.commit()
-
+    
     # 6. CRIAR MANUTENÇÃO
     manutencaoA = Manutencao(nome="Manutenção A", setor="Limpeza e Venda")
     manutencaoB = Manutencao(nome="Manutenção B", setor="Limpeza e Venda")
@@ -121,7 +123,7 @@ with Session(engine) as session:
     Camisa = Produto(nome="camisa", tipo="roupa", marca="Prada", genero="feminino", tamanho="PP/P/M/G/GG", valor= 5000.00, comissao=250.00, quantidade=30, fornecedor_id=Odin.id) 
     Bolsa = Produto(nome="bolsa", tipo="acessorios", marca="Alexander Mcqueen", genero="feminino", tamanho="unico", valor= 18.000, comissao=900.00, quantidade=10, fornecedor_id=Zeus.id)
     Salto = Produto(nome="salto", tipo="salto", marca="Christian Dior", genero="feminino", tamanho="35/36/37/38", valor= 5300.00, comissao=265.00, quantidade=47, fornecedor_id=Tyche.id)
-    Calça = Produto(nome="calça", tipo="roupa", marca="Balmain", genero="masculino", tamanho="PP/P/M/G/GG", valor= 9.405, comissao=470.25, quantidade=25, fornecedor_id=Loki.id)
+    Calça = Produto(nome="calça", tipo="roupa", marca="Balmain", genero="feminino", tamanho="PP/P/M/G/GG", valor= 9.405, comissao=470.25, quantidade=25, fornecedor_id=Loki.id)
     Cueca = Produto(nome="cueca", tipo="roupa", marca="Calvin Klein", genero="masculino", tamanho="PP/P/M/G/GG", valor= 85.00, comissao=4.25, quantidade=53, fornecedor_id=Aphrodite.id)
     Cinto = Produto(nome="cinto", tipo="acessorios", marca="Balenciaga", genero="masculino", tamanho="unico", valor= 490.00, comissao=24.50, quantidade=23, fornecedor_id=Hades.id)
 
@@ -168,10 +170,10 @@ with Session(engine) as session:
 
         conn.execute(update(Venda).where(Venda.id == venda1.id).values(data="2023-12-22"))
         
-Produtos = session.query(Produto, Fornecedor).join(Fornecedor, Produto.fornecedor_id == Fornecedor.id)
+produtos = session.query(Produto, Fornecedor).join(Fornecedor, Produto.fornecedor_id == Fornecedor.id)
 vendas = session.query(Venda, Cliente, FormaDePagamento, Funcionario).join(Cliente).join(FormaDePagamento).join(Funcionario)
 vendasProdutos = session.query(VendaProduto, Venda, Produto).join(Venda).join(Produto)
-Funcionarios = session.query(Funcionario, Departamento, Manutencao).join(Departamento).join(Manutencao)
+funcionarios = session.query(Funcionario, Departamento).join(Departamento)
 
 clientes = session.query(Cliente).all()
 print("\nConsulta numero 1 tabela Cliente")
@@ -185,32 +187,32 @@ for cliente in clientes:
     print(f"Generico: {cliente.generico}")
     print(f"Valor De Comissao: {cliente.valor_de_comissao}\n")
     
-Departamento = session.query(Departamento).all()
+departamentos = session.query(Departamento).all()
 print("\nConsulta numero 2 tabela Departamento")
-for departamento in Departamento:
+for departamento in departamentos:
     print(f"\nID: {departamento.id}")
     print(f"Nome: {departamento.nome}")
     print(f"Genero: {departamento.genero}\n")
     
-FormaDePagamento = session.query(FormaDePagamento).all()
+formaDePagamentos = session.query(FormaDePagamento).all()
 print("\nConsulta numero 3 tabela Formas de Pagamento")
-for FormaDePagamento in FormaDePagamento:
-    print(f"\nID: {FormaDePagamento.id}")
-    print(f"Nome: {FormaDePagamento.nome}")
-    print(f"Genero: {FormaDePagamento.tipo_de_forma_de_pagamento}\n")
+for formaDePagamento in formaDePagamentos:
+    print(f"\nID: {formaDePagamento.id}")
+    print(f"Nome: {formaDePagamento.nome}")
+    print(f"Genero: {formaDePagamento.tipo_de_forma_de_pagamento}\n")
     
-Fornecedor = session.query(Fornecedor).all()
+fornecedores = session.query(Fornecedor).all()
 print("\nConsulta numero 4 tabela de Fornecedores")
-for Fornecedor in Fornecedor:
-    print(f"\nID: {Fornecedor.id}")
-    print(f"CNPJ: {Fornecedor.cnpj}")
-    print(f"Nome da Empresa: {Fornecedor.nome_da_empresa}")
-    print(f"Qual o Produto: {Fornecedor.tipo_de_produto}")
-    print(f"Quantidade Fornecida: {Fornecedor.quantidade_de_produto}\n")
+for fornecedor in fornecedores:
+    print(f"\nID: {fornecedor.id}")
+    print(f"CNPJ: {fornecedor.cnpj}")
+    print(f"Nome da Empresa: {fornecedor.nome_da_empresa}")
+    print(f"Qual o Produto: {fornecedor.tipo_de_produto}")
+    print(f"Quantidade Fornecida: {fornecedor.quantidade_de_produto}\n")
     
 print("Consulta número 5 tabela de Funcionarios")
-for funcionario, departamento, manutencao in Funcionarios:
-    print(f"ID: {funcionario.id}")
+for funcionario, departamento in funcionarios:
+    print(f"\nID: {funcionario.id}")
     print(f"Nome: {funcionario.nome}")
     print(f"CPF: {funcionario.cpf}")
     print(f"Conta: {funcionario.conta}")
@@ -219,23 +221,19 @@ for funcionario, departamento, manutencao in Funcionarios:
     print(f"Endereço: {funcionario.endereco}")
     print(f"Função: {funcionario.funcao}")
     print(f"Comissão: {funcionario.comissao}")
-    print(f"Departamento: {departamento.nome}")
-
-
+    print(f"Departamento: {departamento.nome}\n")
     
-Manutencao = session.query(Manutencao).all()
+manutencões = session.query(Manutencao).all()
 print("\nConsulta numero 6 tabela de Manutenção")
-for Manutencao in Manutencao:
-    print(f"\nID: {Manutencao.id}")
-    print(f"Nome: {Manutencao.nome}")
-    print(f"Setor: {Manutencao.setor}\n")
+for manutencao in manutencões:
+    print(f"\nID: {manutencao.id}")
+    print(f"Nome: {manutencao.nome}")
+    print(f"Setor: {manutencao.setor}\n")
     
-Produto = session.query(Produto).all()
-print(".")
 print("\nConsulta numero 7 tabela de Produtos")
-for produto, fornecedor in Produtos:
+for produto, fornecedor in produtos:
     print(f"\nID: {produto.id}")
-    print(f" Nome: {produto.nome}")
+    print(f"Nome: {produto.nome}")
     print(f"Tipo de Produto: {produto.tipo}")
     print(f"Marca: {produto.marca}")
     print(f"Gênero: {produto.genero}")
@@ -245,22 +243,20 @@ for produto, fornecedor in Produtos:
     print(f"Quantidade De Produtos: {produto.quantidade}")
     print(f"Fornecedor: {fornecedor.nome_da_empresa}\n")
     
-Venda = session.query(Venda).all()
 print("\nConsulta numero 8 tabela de Venda")
-for Venda, cliente, FormaDePagamento, Funcionario in vendas:
-    print(f"\nID: {Venda.id}")
-    print(f"Data: {Venda.data}")
-    print(f"Valor: {Venda.valor}")
+for venda, cliente, FormaDePagamento, Funcionario in vendas:
+    print(f"\nID: {venda.id}")
+    print(f"Data: {venda.data}")
+    print(f"Valor: {venda.valor}")
     print(f"Cliente: {cliente.nome}")
-    print(f"Forma De Pagamento: {FormaDePagamento.nome}")
-    print(f"Funcionario: {Funcionario.nome}\n")
+    print(f"Forma De Pagamento: {formaDePagamento.nome}")
+    print(f"Funcionario: {funcionario.nome}\n")
     
 print("\nConsulta numero 9 tabela de VendaProduto")
 for venda_produto, venda, produto in vendasProdutos:
     print(f"\nID: {venda_produto.id}")
     print(f"Venda ID: {venda.id}")
     print(f"Produto ID: {produto.id}\n")
-    
     
 print("Quais são os dados dos clientes com valor de comissão acima de 100?\n")
 
@@ -271,21 +267,35 @@ for cliente in clientes_com_comissao_acima_de_100:
     print("CPF:", cliente.cpf)
     print("Telefone:", cliente.telefone)
     print("Email:", cliente.email)
-    print("Valor de Comissão:", cliente.valor_de_comissao)
     print("\n")
     
-print("Quais são os dados dos Funcionarios com Salario acima de 3000?\n")
+print("Quais são os dados dos Fornecedores que fornecem mais de 30 produtos??\n")
 
-salario_maior_que_3000 = session.query(Funcionario).filter(Funcionario.salario > 3000).all()
-for funcio in salario_maior_que_3000:
-    print("ID:", Funcionario.id)
-    print("Nome:", Funcionario.nome)
-    print("CPF:", Funcionario.cpf)
-    print("Conta:", Funcionario.conta)
-    print("Carga Horaria:", Funcionario.carga_horaria)
-    print("Endereço:", Funcionario.endereco)
-    print("Função:", Funcionario.funcao)
-    print("Valor de Comissão:", Funcionario.comissao)
+fornecedor_mais_30_produtos = session.query(Fornecedor).filter(Fornecedor.quantidade_de_produto > 30).all()
+for fornecedor in fornecedor_mais_30_produtos:
+    print(f"ID: {fornecedor.id}")
+    print(f"Nome da Empresa: {fornecedor.nome_da_empresa}")
+    print(f"CNPJ: {fornecedor.cnpj}")
+    print(f"Quantidade de Produtos: {fornecedor.quantidade_de_produto}")
+    print("\n")
+
+print("Quais são os Produtos Femininos Da Loja?\n")
+
+produtos_femininos = session.query(Produto).filter(Produto.genero == "Feminino").all()
+for produto in produtos_femininos:
+    print("ID:", produto.id)
+    print("Nome:", produto.nome)
+    print("Tipo:", produto.tipo)
+    print("Gênero:", produto.genero)
+    print("\n")
+    
+print("Quais São Os Funcionario Que recebem Mais de R$3000?\n")
+
+valor_de_compra = session.query(Venda).filter(Venda.valor > 17000).all()
+for venda in valor_de_compra:
+    print("ID:", venda.id)
+    print("Data:", venda.data)
+    print("Valor:", venda.valor)
     print("\n")
 
 session.close()
